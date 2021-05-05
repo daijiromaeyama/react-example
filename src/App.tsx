@@ -1,24 +1,40 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react';
+import { getRecipe, Recipe } from './getRecipe';
+import { Ingredients } from './Ingredients';
+import { MyFolderButton } from './MyFolderButton';
+import { Steps } from "./Steps";
 
 function App() {
+  const [recipe, setRecipe] = useState<Recipe | null>(null);
+  
+  useEffect(() => {
+    (async () => {
+      const recipe = await getRecipe();
+      setRecipe(recipe);
+    })();
+  }, []);
+
+  if (recipe === null) return <div>looding...</div>
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1 className="header">My Recipe Page!</h1>
+
+      <h2 className="title">{recipe.name}</h2>
+
+      {recipe.imageUrl && (
+        <img className="recipeImage" src={recipe.imageUrl} alt="" width="300" />
+      )}
+
+      <div className="btn">
+        <MyFolderButton />
+      </div>
+      
+      <h3 className="subTitle">手順</h3>
+      <Steps steps={recipe.steps} />
+
+      <h3 className="subTitle">材料</h3>
+      <Ingredients ingredients={recipe.ingredients} />
     </div>
   );
 }
